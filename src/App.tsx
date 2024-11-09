@@ -1,19 +1,26 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
+import Auth from "./components/Auth/Auth";
+import { Layout } from "antd";
 
-function App() {
-  const [message, setMessage] = useState("");
+const { Header, Content } = Layout;
 
-  useEffect(() => {
-    fetch("http://localhost:8000/api/greeting/?name=ВашеИмя")
-      .then((response) => response.json())
-      .then((data) => setMessage(data.message));
-  }, []);
-
+const App: React.FC = () => {
   return (
-    <div>
-      <h1>{message}</h1>
-    </div>
+    <Layout style={{ minHeight: "100vh" }}>
+      <Header
+        style={{
+          backgroundColor: "#FFB6C1",
+          color: "#fff",
+          textAlign: "center",
+        }}
+      >
+        <h1 style={{ color: "#fff" }}>SheHub</h1>
+      </Header>
+      <Content style={{ padding: "20px 50px" }}>
+        <Auth />
+      </Content>
+    </Layout>
   );
-}
+};
 
 export default App;
