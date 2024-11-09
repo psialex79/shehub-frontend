@@ -9,68 +9,54 @@ import {
   message,
 } from "antd";
 import { addMeeting } from "../../services/meetingsService";
+import { EnvironmentOutlined, UserOutlined } from "@ant-design/icons";
 
 interface AddMeetingProps {
   visible: boolean;
   onClose: () => void;
-  onAdd: () => void;
+  onAdd: (newMeeting: any) => void;
 }
 
 const AddMeeting: React.FC<AddMeetingProps> = ({ visible, onClose, onAdd }) => {
   const [form] = Form.useForm();
-  const [loading, setLoading] = useState<boolean>(false);
+  const [loading, setLoading] = useState(false);
 
-  const handleOk = () => {
-    form
-      .validateFields()
-      .then(async (values) => {
-        setLoading(true);
-        const date = values.date.format("YYYY-MM-DD");
-        const time = values.time.format("HH:mm:ss");
+  const handleSubmit = async () => {
+    try {
+      const values = await form.validateFields();
+      const meeting = {
+        ...values,
+        date: values.date.format("YYYY-MM-DD"),
+        time: values.time.format("HH:mm"),
+      };
 
-        try {
-          await addMeeting({
-            invitee_name: values.invitee_name,
-            place: values.place,
-            date: date,
-            time: time,
-          });
-          message.success("Встреча успешно добавлена!");
-          form.resetFields();
-          onAdd();
-          onClose();
-        } catch (error: any) {
-          console.error("Ошибка при добавлении встречи:", error);
-          message.error("Не удалось добавить встречу.");
-        } finally {
-          setLoading(false);
-        }
-      })
-      .catch((info) => {
-        console.log("Валидация не прошла:", info);
-      });
-  };
-
-  const handleCancel = () => {
-    form.resetFields();
-    onClose();
+      setLoading(true);
+      const newMeeting = await addMeeting(meeting);
+      message.success("Встреча добавлена успешно!");
+      form.resetFields();
+      onAdd(newMeeting);
+      onClose();
+    } catch {
+      message.error("Не удалось добавить встречу.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
     <Modal
       visible={visible}
-      title="Добавить новую встречу"
-      onOk={handleOk}
-      onCancel={handleCancel}
+      title="Новая встреча"
+      onCancel={onClose}
       footer={[
-        <Button key="back" onClick={handleCancel}>
+        <Button key="cancel" onClick={onClose}>
           Отмена
         </Button>,
         <Button
           key="submit"
           type="primary"
           loading={loading}
-          onClick={handleOk}
+          onClick={handleSubmit}
         >
           Добавить
         </Button>,
@@ -79,45 +65,31 @@ const AddMeeting: React.FC<AddMeetingProps> = ({ visible, onClose, onAdd }) => {
       <Form form={form} layout="vertical" name="add_meeting_form">
         <Form.Item
           name="invitee_name"
-          label="Имя приглашённого"
-          rules={[
-            {
-              required: true,
-              message: "Пожалуйста, введите имя приглашённого",
-            },
-          ]}
+          label="Имя"
+          rules={[{ required: true, message: "Введите имя приглашенного" }]}
         >
-          <Input placeholder="Введите имя приглашённого" />
+          <Input prefix={<UserOutlined />} placeholder="Имя приглашенного" />
         </Form.Item>
-
         <Form.Item
           name="place"
           label="Место"
-          rules={[
-            { required: true, message: "Пожалуйста, введите место встречи" },
-          ]}
+          rules={[{ required: true, message: "Введите место встречи" }]}
         >
-          <Input placeholder="Введите место встречи" />
+          <Input prefix={<EnvironmentOutlined />} placeholder="Место встречи" />
         </Form.Item>
-
         <Form.Item
           name="date"
           label="Дата"
-          rules={[
-            { required: true, message: "Пожалуйста, выберите дату встречи" },
-          ]}
+          rules={[{ required: true, message: "Выберите дату встречи" }]}
         >
           <DatePicker style={{ width: "100%" }} />
         </Form.Item>
-
         <Form.Item
           name="time"
           label="Время"
-          rules={[
-            { required: true, message: "Пожалуйста, выберите время встречи" },
-          ]}
+          rules={[{ required: true, message: "Выберите время встречи" }]}
         >
-          <TimePicker style={{ width: "100%" }} />
+          <TimePicker format="HH:mm" style={{ width: "100%" }} />
         </Form.Item>
       </Form>
     </Modal>

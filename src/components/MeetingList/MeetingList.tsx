@@ -1,106 +1,91 @@
-import React, { useState } from "react";
-import { List, Avatar, Tag, Card, Empty, Skeleton, Button } from "antd";
-import {
-  UserOutlined,
-  ClockCircleOutlined,
-  EnvironmentOutlined,
-  PlusOutlined,
-} from "@ant-design/icons";
-import { Meeting } from "./interfaces";
+import React, { useState, useCallback } from "react";
+import { List, Empty, Spin, notification, Space, FloatButton } from "antd";
+import { PlusOutlined } from "@ant-design/icons";
+import MeetingItem from "./MeetingItem";
 import AddMeeting from "../AddMeeting/AddMeeting";
+import TodayMeetingSummary from "./TodayMeetingSummary";
+import { Meeting } from "./interfaces";
+import dayjs from "dayjs";
 
 interface Props {
   meetings: Meeting[];
   loading?: boolean;
-  onAddMeeting: () => void;
+  onAddMeeting: (newMeeting: Meeting) => void;
 }
 
 const MeetingList: React.FC<Props> = ({
   meetings,
-  loading = false,
   onAddMeeting,
+  loading = false,
 }) => {
-  const [isModalVisible, setIsModalVisible] = useState<boolean>(false);
+  const [isModalVisible, setModalVisible] = useState(false);
 
-  const showAddMeetingModal = () => {
-    setIsModalVisible(true);
+  const toggleModal = useCallback(() => setModalVisible((prev) => !prev), []);
+
+  const openNotification = (message: string) => {
+    notification.success({
+      message,
+      placement: "topRight",
+      duration: 2,
+    });
   };
 
-  const handleCloseModal = () => {
-    setIsModalVisible(false);
+  const handleAddMeeting = (newMeeting: Meeting) => {
+    onAddMeeting(newMeeting);
+    openNotification("Встреча добавлена успешно!");
+    toggleModal();
   };
+
+  const sortedMeetings = [...meetings].sort((a, b) => {
+    const currentDate = dayjs();
+    const dateA = dayjs(`${a.date} ${a.time}`);
+    const dateB = dayjs(`${b.date} ${b.time}`);
+
+    const isPastA = dateA.isBefore(currentDate);
+    const isPastB = dateB.isBefore(currentDate);
+
+    if (isPastA && !isPastB) return 1;
+    if (!isPastA && isPastB) return -1;
+
+    return dateA.isAfter(dateB) ? 1 : -1;
+  });
 
   return (
-    <div>
-      <Button
-        type="primary"
-        icon={<PlusOutlined />}
-        style={{ marginBottom: 16 }}
-        onClick={showAddMeetingModal}
-      >
-        Добавить встречу
-      </Button>
-
+    <Space
+      direction="vertical"
+      size="middle"
+      style={{
+        width: "100%",
+        padding: "8px",
+        background:
+          "linear-gradient(120deg, rgba(255, 182, 193, 0.3), rgba(173, 216, 230, 0.3))",
+      }}
+    >
       <AddMeeting
         visible={isModalVisible}
-        onClose={handleCloseModal}
-        onAdd={onAddMeeting}
+        onClose={toggleModal}
+        onAdd={handleAddMeeting}
       />
 
-      <List
-        grid={{ gutter: 16, column: 1 }}
-        dataSource={meetings}
-        locale={{
-          emptyText: loading ? (
-            <Skeleton active />
-          ) : (
-            <Empty description="У вас пока нет встреч" />
-          ),
-        }}
-        renderItem={(item) => (
-          <List.Item>
-            <Card hoverable>
-              <List.Item.Meta
-                avatar={
-                  <Avatar
-                    style={{ backgroundColor: "#FFB6C1" }}
-                    icon={<UserOutlined />}
-                  />
-                }
-                title={
-                  <div style={{ display: "flex", alignItems: "center" }}>
-                    <span style={{ fontSize: "1.2em", fontWeight: 500 }}>
-                      {item.invitee_name}
-                    </span>
-                    {item.isNew && (
-                      <Tag color="red" style={{ marginLeft: 8 }}>
-                        Новая
-                      </Tag>
-                    )}
-                  </div>
-                }
-                description={
-                  <div>
-                    <p>
-                      <EnvironmentOutlined
-                        style={{ marginRight: 8, color: "#1890ff" }}
-                      />
-                      Место: {item.place}
-                    </p>
-                    <p>
-                      <ClockCircleOutlined
-                        style={{ marginRight: 8, color: "#1890ff" }}
-                      />
-                      Время: {item.time}
-                    </p>
-                  </div>
-                }
+      <TodayMeetingSummary meetings={meetings} />
+
+      <Spin spinning={loading} tip="Загрузка...">
+        <List
+          dataSource={sortedMeetings}
+          renderItem={(item) => <MeetingItem item={item} />}
+          locale={{
+            emptyText: (
+              <Empty
+                description="Нет встреч"
+                image={Empty.PRESENTED_IMAGE_SIMPLE}
               />
-            </Card>
-          </List.Item>
-        )}
-      />
-    </div>
+            ),
+          }}
+        />
+      </Spin>
+
+      <FloatButton icon={<PlusOutlined />} onClick={toggleModal} />
+    </Space>
   );
 };
 
