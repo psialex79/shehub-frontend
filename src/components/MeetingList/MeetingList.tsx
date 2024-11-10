@@ -41,13 +41,19 @@ const MeetingList: React.FC<Props> = ({
     const dateA = dayjs(`${a.date} ${a.time}`);
     const dateB = dayjs(`${b.date} ${b.time}`);
 
-    const isPastA = dateA.isBefore(currentDate);
-    const isPastB = dateB.isBefore(currentDate);
+    const isTodayA = dateA.isSame(currentDate, "day");
+    const isTodayB = dateB.isSame(currentDate, "day");
 
-    if (isPastA && !isPastB) return 1;
-    if (!isPastA && isPastB) return -1;
+    if (isTodayA && !isTodayB) return -1;
+    if (!isTodayA && isTodayB) return 1;
 
-    return dateA.isAfter(dateB) ? 1 : -1;
+    const isFutureA = dateA.isAfter(currentDate);
+    const isFutureB = dateB.isAfter(currentDate);
+
+    if (isFutureA && !isFutureB) return -1;
+    if (!isFutureA && isFutureB) return 1;
+
+    return dateA.isBefore(dateB) ? -1 : 1;
   });
 
   return (
@@ -56,9 +62,10 @@ const MeetingList: React.FC<Props> = ({
       size="middle"
       style={{
         width: "100%",
-        padding: "8px",
-        background:
-          "linear-gradient(120deg, rgba(255, 182, 193, 0.3), rgba(173, 216, 230, 0.3))",
+        padding: "16px",
+        borderRadius: "16px",
+        backgroundColor: "rgba(255, 255, 255, 0.8)",
+        transition: "background 0.3s ease-in-out",
       }}
     >
       <AddMeeting
@@ -72,19 +79,36 @@ const MeetingList: React.FC<Props> = ({
       <Spin spinning={loading} tip="Загрузка...">
         <List
           dataSource={sortedMeetings}
-          renderItem={(item) => <MeetingItem item={item} />}
+          renderItem={(item) => (
+            <MeetingItem
+              item={item}
+              isHighlighted={item === sortedMeetings[0]}
+            />
+          )}
           locale={{
             emptyText: (
               <Empty
                 description="Нет встреч"
                 image={Empty.PRESENTED_IMAGE_SIMPLE}
+                style={{ color: "#595959" }}
               />
             ),
+          }}
+          style={{
+            marginBottom: "24px",
           }}
         />
       </Spin>
 
-      <FloatButton icon={<PlusOutlined />} onClick={toggleModal} />
+      <FloatButton
+        icon={<PlusOutlined />}
+        onClick={toggleModal}
+        className="pulse"
+        style={{
+          backgroundColor: "rgba(133, 193, 233, 0.9)",
+          color: "#fff",
+        }}
+      />
     </Space>
   );
 };

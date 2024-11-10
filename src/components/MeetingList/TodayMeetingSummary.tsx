@@ -1,5 +1,5 @@
 import React from "react";
-import { Typography, Divider, Space, Tag } from "antd";
+import { Typography, Space, Tag } from "antd";
 import {
   CheckCircleOutlined,
   ClockCircleOutlined,
@@ -29,40 +29,38 @@ const TodayMeetingSummary: React.FC<TodayMeetingSummaryProps> = ({
   const upcomingMeetings = todayMeetings.length - pastMeetings;
 
   return (
-    <Space
-      size="large"
+    <div
+      className="glow"
       style={{
+        padding: "16px",
+        borderRadius: "12px",
         display: "flex",
+        justifyContent: "space-around",
         alignItems: "center",
-        justifyContent: "space-between",
-        width: "100%",
-        padding: "8px 8px",
-        borderRadius: 8,
+        marginBottom: "24px",
       }}
     >
-      <Space>
-        <CalendarOutlined style={{ fontSize: 18, color: "#FF69B4" }} />
-        <Text strong style={{ fontSize: 16, color: "#FF69B4" }}>
+      <Space direction="vertical" align="center">
+        <CalendarOutlined style={{ fontSize: 24, color: "#6fa3ef" }} />
+        <Text strong style={{ fontSize: 16, color: "#6fa3ef" }}>
           Сегодня
         </Text>
       </Space>
 
-      <Space size="small">
-        <CheckCircleOutlined style={{ fontSize: 18, color: "#52c41a" }} />
-        <Tag color="green" style={{ margin: 0 }}>
+      <Space direction="vertical" align="center">
+        <CheckCircleOutlined style={{ fontSize: 24, color: "#94d2bd" }} />
+        <Tag color="green" style={{ fontSize: 14, padding: "2px 8px" }}>
           {pastMeetings}
         </Tag>
       </Space>
 
-      <Space size="small">
-        <ClockCircleOutlined style={{ fontSize: 18, color: "#1890ff" }} />
-        <Tag color="blue" style={{ margin: 0 }}>
+      <Space direction="vertical" align="center">
+        <ClockCircleOutlined style={{ fontSize: 24, color: "#ffe066" }} />
+        <Tag color="gold" style={{ fontSize: 14, padding: "2px 8px" }}>
           {upcomingMeetings}
         </Tag>
       </Space>
-
-      <Divider style={{ margin: 0 }} />
-    </Space>
+    </div>
   );
 };
 

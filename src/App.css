@@ -1,38 +1,81 @@
-.App {
-  text-align: center;
+body {
+  animation: fade-in 1s ease-in-out;
 }
 
-.App-logo {
-  height: 40vmin;
-  pointer-events: none;
-}
-
-@media (prefers-reduced-motion: no-preference) {
-  .App-logo {
-    animation: App-logo-spin infinite 20s linear;
-  }
-}
-
-.App-header {
-  background-color: #282c34;
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  justify-content: center;
-  font-size: calc(10px + 2vmin);
-  color: white;
-}
-
-.App-link {
-  color: #61dafb;
-}
-
-@keyframes App-logo-spin {
+@keyframes fade-in {
   from {
-    transform: rotate(0deg);
+    opacity: 0;
   }
   to {
-    transform: rotate(360deg);
+    opacity: 1;
+  }
+}
+
+.animated-background {
+  min-height: 100vh;
+  animation: gradientAnimation 1s ease infinite alternate;
+  background: linear-gradient(120deg, #023c8d, #8a0702, #03941b);
+  background-size: 300% 300%;
+}
+
+@keyframes gradientAnimation {
+  0% {
+    background-position: 0% 50%;
+  }
+  50% {
+    background-position: 100% 50%;
+  }
+  100% {
+    background-position: 0% 50%;
+  }
+}
+
+.pulse {
+  animation: pulseAnimation 1s ease-in-out infinite;
+}
+
+@keyframes pulseAnimation {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 10px rgba(133, 193, 233, 0.4);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(133, 193, 233, 0.6);
+  }
+}
+
+.highlight {
+  animation: borderPulse 1s ease-in-out infinite;
+}
+
+@keyframes borderPulse {
+  0%,
+  100% {
+    border-color: rgba(102, 204, 255, 0.3);
+  }
+  50% {
+    border-color: rgba(102, 204, 255, 0.7);
+  }
+}
+
+.glow {
+  animation: shimmerEffect 1s ease-in-out infinite;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 213, 213, 0.5),
+    rgba(204, 228, 255, 0.5),
+    rgba(255, 213, 213, 0.5)
+  );
+  background-size: 200% 100%;
+}
+
+@keyframes shimmerEffect {
+  0% {
+    background-position: -100% 0;
+  }
+  100% {
+    background-position: 100% 0;
   }
 }
