@@ -1,7 +1,7 @@
 import axios from "axios";
 import { NewMeeting } from "../components/AddMeeting/interfaces";
 
-const API_BASE_URL = "http://127.0.0.1:8000/api/meetings/";
+const API_BASE_URL = "https://fba1-49-237-44-27.ngrok-free.app/api/meetings/";
 
 const api = axios.create({
   baseURL: API_BASE_URL,
@@ -23,6 +23,11 @@ export const addMeeting = async (meeting: NewMeeting) => {
 };
 
 export const getMeetings = async () => {
-  const response = await api.get("list/");
-  return response.data;
+  try {
+    const response = await api.get("list/");
+    return response.data;
+  } catch (error) {
+    console.error("Ошибка при запросе встреч:", error);
+    throw error;
+  }
 };
