@@ -15,13 +15,16 @@ const Auth: React.FC = () => {
 
     const authorizeUser = async () => {
       try {
-        const response = await fetch("/api/users/auth/", {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({
-            initData: window.Telegram.WebApp.initDataUnsafe,
-          }),
-        });
+        const response = await fetch(
+          "https://fba1-49-237-44-27.ngrok-free.app/api/users/auth/",
+          {
+            method: "POST",
+            headers: { "Content-Type": "application/json" },
+            body: JSON.stringify({
+              initData: window.Telegram.WebApp.initDataUnsafe,
+            }),
+          }
+        );
 
         if (!response.ok) throw new Error("Ошибка авторизации");
         const { token } = await response.json();
