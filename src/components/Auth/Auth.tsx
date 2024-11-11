@@ -3,6 +3,7 @@ import MeetingList from "../MeetingList/MeetingList";
 import { Meeting } from "../MeetingList/interfaces";
 import { Spin, Alert, message } from "antd";
 import { getMeetings } from "../../services/meetingsService";
+import { API_BASE_URL } from "../../config";
 
 const Auth: React.FC = () => {
   const [meetings, setMeetings] = useState<Meeting[]>([]);
@@ -15,16 +16,13 @@ const Auth: React.FC = () => {
 
     const authorizeUser = async () => {
       try {
-        const response = await fetch(
-          "https://fba1-49-237-44-27.ngrok-free.app/api/users/auth/",
-          {
-            method: "POST",
-            headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({
-              initData: window.Telegram.WebApp.initDataUnsafe,
-            }),
-          }
-        );
+        const response = await fetch(`${API_BASE_URL}/api/users/auth/`, {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({
+            initData: window.Telegram.WebApp.initDataUnsafe,
+          }),
+        });
 
         if (!response.ok) throw new Error("Ошибка авторизации");
         const { token } = await response.json();

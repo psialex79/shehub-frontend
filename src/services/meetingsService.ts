@@ -1,10 +1,9 @@
 import axios from "axios";
 import { NewMeeting } from "../components/AddMeeting/interfaces";
-
-const API_BASE_URL = "https://fba1-49-237-44-27.ngrok-free.app/api/meetings/";
+import { API_BASE_URL } from "../config";
 
 const api = axios.create({
-  baseURL: API_BASE_URL,
+  baseURL: `${API_BASE_URL}/api/meetings/`,
   headers: { "Content-Type": "application/json" },
 });
 
